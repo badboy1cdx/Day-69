@@ -13,6 +13,8 @@ from flask_gravatar import Gravatar
 from functools import wraps
 import os
 from dotenv import load_dotenv
+import click
+from flask.cli import with_appcontext
 
 load_dotenv()
 app = Flask(__name__)
@@ -74,6 +76,15 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"))
     parent_post = relationship("BlogPost", back_populates="comments")
 # db.create_all()
+
+# Custom CLI command
+@click.command(name="create_tables")
+@with_appcontext
+def create_tables():
+    db.create_all()
+    
+app.cli.add_command(create_tables)
+
 
 @login_manager.user_loader
 def load_user(user_id):
